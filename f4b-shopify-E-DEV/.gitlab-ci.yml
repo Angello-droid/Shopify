@@ -1,0 +1,80 @@
+include:
+  - project: "flutterwavego/devops/pipeline-template-definitions"
+    file: "build-trunk-base.yml"
+
+variables:
+  NAME_SPACE: "f4b-shopify" 
+  PORT: "3000"
+  PROJECT_NAME: "f4b" 
+  CLUSTER_NAME: "f4b-cluster" 
+
+## This section lists the logical order of the application development workflow
+stages:
+  - checkmarx-scan
+  - version 
+  - build
+  - image-scan
+  - deploy-dev 
+  - deploy
+
+
+## This section builds the docker image for trunk base deployments added 
+build_image:
+  extends: .build_image
+ 
+
+image_scan:
+  extends: .image_scan
+
+
+## This section will trigger ArgoCD to deploy the image to the dev kubernetes cluster for dev traffic.
+deploy_dev:
+  extends: .deploy_test_app_auto
+  stage: deploy-dev
+  variables:
+    DEPLOYMENT_ENV: "dev" 
+    APP_ENV: "f4b-shopify-dev-config"
+  environment:
+    name: development
+
+
+## This section will trigger ArgoCD to deploy the image to the kubernetes cluster for uat traffic.
+deploy_uat:
+  extends: .deploy_test_app_auto
+  stage: deploy-dev
+  variables:
+    DEPLOYMENT_ENV: "uat" 
+    APP_ENV: "f4b-shopify-dev-config"
+  environment:
+    name: development 
+  when: manual
+ 
+
+## This section will trigger ArgoCD to deploy the image to the kubernetes cluster for sit traffic.
+deploy_sit:
+  extends: .deploy_prod_app_auto
+  stage: deploy
+  variables:
+    DEPLOYMENT_ENV: "sit"
+    APP_ENV: "f4b-shopify-prod"
+    PROD_FOLDER_NAME: "$CLUSTER_NAME"
+    PROJECT: "$PROJECT_NAME"
+    ENABLE_VERSION: "true"
+  environment:
+    name: production 
+  when: manual
+
+   
+  ## This section will trigger ArgoCD to deploy the image to the kubernetes cluster for live traffic.
+deploy_prod:
+  extends: .deploy_prod_app_auto
+  stage: deploy
+  variables:
+    DEPLOYMENT_ENV: "prod"
+    APP_ENV: "f4b-shopify-prod"
+    PROD_FOLDER_NAME: "$CLUSTER_NAME"
+    PROJECT: "$PROJECT_NAME"
+    ENABLE_VERSION: "true"
+  environment:
+    name: production 
+  when: manual

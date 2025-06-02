@@ -1,0 +1,38 @@
+{
+  "name": "f4b-shopify",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon server | pino-pretty",
+    "build:ui": "next build ui",
+    "start": "yarn build:ui && node server",
+    "lint:ui": "next lint ui",
+    "mig:make": "knex migrate:make --knexfile ./server/db/knex.config.js",
+    "mig:latest": "knex migrate:latest --knexfile ./server/db/knex.config.js",
+    "mig:rollback": "knex migrate:rollback --knexfile ./server/db/knex.config.js",
+    "mig:up": "knex migrate:up --knexfile ./server/db/knex.config.js",
+    "mig:down": "knex migrate:down --knexfile ./server/db/knex.config.js"
+  },
+  "dependencies": {
+    "@shopify/polaris": "^9.16.0",
+    "@shopify/shopify-api": "^3.1.3",
+    "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "got": "^13.0.0",
+    "graphql": "^16.5.0",
+    "graphql-request": "^4.3.0",
+    "knex": "^2.1.0",
+    "mysql2": "^2.3.3",
+    "next": "12.1.6",
+    "pino": "^8.11.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2"
+  },
+  "devDependencies": {
+    "eslint": "8.17.0",
+    "eslint-config-next": "12.1.6",
+    "nodemon": "^2.0.22",
+    "pino-pretty": "^10.0.0"
+  }
+}
